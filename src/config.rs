@@ -107,7 +107,7 @@ const CHARS: &[char] = &[
 ];
 
 pub const RENDEZVOUS_SERVERS: &[&str] = &["remote.jddbd.com"];
-pub const RS_PUB_KEY: &str = "NmI08rQCslB0FbZ+dWxuHAFFfgWVVotWdepP6sfog0g=";
+pub const RS_PUB_KEY: &str = "Pg+BK4ujyn4oqs5mbLsZYqv6XWXJ9nHkQMJFf3O0pDw=";
 
 pub const RENDEZVOUS_PORT: i32 = 21116;
 pub const RELAY_PORT: i32 = 21117;
